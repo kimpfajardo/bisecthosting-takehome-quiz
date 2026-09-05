@@ -18,6 +18,7 @@ module.exports = {
       },
       colors: {
         'root-bg': '#020525',
+        brand: '#03DDFF',
         shade: {
           light: '#1C2554',
         },
