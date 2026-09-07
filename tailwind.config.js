@@ -15,6 +15,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Montserrat', 'sans-serif'],
+        akira: ['Akira', 'sans-serif'],
       },
       colors: {
         'root-bg': '#020525',
