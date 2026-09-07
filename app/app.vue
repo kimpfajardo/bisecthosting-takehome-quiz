@@ -1,9 +1,34 @@
 <template>
-  <div class="bg-root-bg text-white">
+  <div class="relative min-h-screen bg-root-bg bg-[url('/main-bg.webp')] bg-cover bg-no-repeat bg-top text-white">
     <Header />
-    <main class="px-4 pb-10 pt-[89px]">
-      <section class="ml-[96px] flex max-w-[579px] flex-col gap-[33px]">
-        <Chip>Cherry Blossom Update</Chip>
+    <Banner class="mt-[53px]" />
+    <main class="relative mx-auto max-w-[1382px] px-4 pb-10 pt-[76px]">
+      <div class="pointer-events-none absolute left-1/2 top-0 w-screen -translate-x-1/2 select-none">
+        <img
+          src="/cherry-blossom-3.png"
+          alt=""
+          aria-hidden="true"
+          class="absolute left-0 -top-[17px]" />
+        <img
+          src="/cherry-blossom-2.png"
+          alt=""
+          aria-hidden="true"
+          class="absolute left-[18px] top-[46px]" />
+      </div>
+      <section class="relative ml-[96px] flex max-w-[579px] flex-col gap-[33px]">
+        <img
+          src="/minecraft.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute left-full top-[-65px] -ml-[150px] h-[650px] w-[1038.3px] max-w-none rotate-0 opacity-100 select-none" />
+        <div class="relative w-fit">
+          <Chip>Cherry Blossom Update</Chip>
+          <img
+            src="/cherry-blossom-1.png"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute left-full top-1/2 ml-[108px] translate-y-[calc(-50%+40px)] select-none" />
+        </div>
         <h1
           class="bg-[linear-gradient(0deg,_#FFFFFF,_#FFFFFF),linear-gradient(90.05deg,_rgba(57,71,184,0)_23.88%,_rgba(57,71,184,0.24)_99.95%)] bg-clip-text font-akira-expanded text-[48px] font-bold leading-none tracking-normal text-transparent">
           Hosting<br />

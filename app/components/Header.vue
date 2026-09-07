@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-root-bg text-white max-w-[1382px] mx-auto px-[16px] py-[10px] w-full flex items-center justify-between">
+  <header class="text-white max-w-[1382px] mx-auto px-[16px] py-[10px] w-full flex items-center justify-between">
     <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
       <img
         src="/bisect-logo.webp"
