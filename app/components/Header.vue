@@ -15,7 +15,7 @@
       </ul>
     </div>
     <div class="hidden xl:flex gap-6">
-      <div class="flex gap-2 p-2 border-2 rounded border-shade-light">
+      <div class="flex gap-2 p-2 border-2 rounded-base border-shade-light">
         <Button variant="ghost">
           <BillingIcon aria-hidden="true" />
           Billing
@@ -54,7 +54,7 @@
     </div>
     <button
       type="button"
-      class="xl:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      class="xl:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand"
       :aria-expanded="open"
       aria-controls="mobile-menu"
       aria-label="Toggle menu"
@@ -79,7 +79,7 @@
         <NavItem label="Learn" />
         <NavItem label="Support" />
       </ul>
-      <div class="flex gap-2 p-2 border-2 rounded border-shade-light w-fit">
+      <div class="flex gap-2 p-2 border-2 rounded-base border-shade-light w-fit">
         <Button variant="ghost">
           <BillingIcon aria-hidden="true" />
           Billing

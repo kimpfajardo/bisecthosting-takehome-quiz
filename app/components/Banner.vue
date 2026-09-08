@@ -1,9 +1,9 @@
 <template>
   <div
-    class="bn relative mx-auto flex min-h-[71px] lg:h-[71px] w-[calc(100%-2rem)] max-w-[1216px] flex-col items-center justify-between gap-4 rounded bg-[radial-gradient(50%_50%_at_50%_50%,_#B855E7_0%,_#B739F2_100%)] p-4 xl:w-full lg:flex-row lg:gap-0 lg:pb-[10px] lg:pl-[27px] lg:pr-[20px] lg:pt-[11px]">
+    class="bn relative mx-auto flex min-h-[71px] lg:h-[71px] w-[calc(100%-2rem)] max-w-[1216px] flex-col items-center justify-between gap-4 rounded-base bg-[radial-gradient(50%_50%_at_50%_50%,_#B855E7_0%,_#B739F2_100%)] p-4 xl:w-full lg:flex-row lg:gap-0 lg:pb-[10px] lg:pl-[27px] lg:pr-[20px] lg:pt-[11px]">
     <span
       aria-hidden="true"
-      class="pointer-events-none absolute inset-0 rounded border border-white mix-blend-soft-light"></span>
+      class="pointer-events-none absolute inset-0 rounded-base border border-white mix-blend-soft-light"></span>
     <div class="bn-group flex items-center gap-4 md:flex-col md:gap-3 lg:flex-row lg:gap-[41px]">
       <img
         src="/panorama-cherry-blossom.png"
@@ -29,7 +29,7 @@
       type="button"
       @mouseenter="hover(true)"
       @mouseleave="hover(false)"
-      class="bn-btn inline-flex h-[50px] w-full items-center justify-center rounded bg-white text-[14px] font-bold uppercase leading-none tracking-wide text-[#B739F2] lg:w-[200px]">
+      class="bn-btn inline-flex h-[50px] w-full items-center justify-center rounded-base bg-white text-[14px] font-bold uppercase leading-none tracking-wide text-[#B739F2] lg:w-[200px]">
       Redeem
     </button>
   </div>
@@ -39,7 +39,6 @@
 import sakuraSrc from 'sakura-js/dist/sakura.min.js?url';
 import 'sakura-js/dist/sakura.min.css';
 
-// ponytail: sakura-js is a global-only script (no exports), so it's loaded as a <script> tag
 const dynamic = useRoute().query.behavior === 'dynamic';
 if (dynamic) useHead({ script: [{ src: sakuraSrc, defer: true }] });
 
@@ -54,7 +53,6 @@ const hover = (on: boolean) => {
   else if (Sakura)
     sakura = new Sakura('#petals', {
       delay: 120,
-      // sampled from cherry-blossom-1.png / panorama: magenta pinks, not the lib's baby pink
       colors: [
         { gradientColorStart: 'rgba(248,152,248,0.9)', gradientColorEnd: 'rgba(232,72,232,0.9)', gradientColorDegree: 120 },
         { gradientColorStart: 'rgba(248,136,200,0.9)', gradientColorEnd: 'rgba(216,56,216,0.9)', gradientColorDegree: 120 },
@@ -64,7 +62,6 @@ const hover = (on: boolean) => {
 </script>
 
 <style>
-/* Redeem hover (dynamic only): smooth scale with a slight tilt */
 [data-behavior='dynamic'] .bn-btn {
   transition: transform 0.3s ease-out;
 }
@@ -72,7 +69,6 @@ const hover = (on: boolean) => {
   transform: rotate(-0.5deg) scale(1.05);
 }
 
-/* ponytail: ?behavior=dynamic only; pure CSS timeline. Base rules below = final frame, keyframes only add the start state. */
 [data-behavior='dynamic'] .bn {
   animation: bn-card 0.4s ease-out both;
 }
@@ -80,12 +76,10 @@ const hover = (on: boolean) => {
   animation: bn-pop 0.5s 0.35s both;
 }
 
-/* < lg: card stretches out from center, image pops, text dashes out from under/behind the image, button pops */
 @media (max-width: 1023.98px) {
   [data-behavior='dynamic'] :is(.bn-mob, .bn-clip) {
     overflow: hidden;
   }
-  /* clip boxes reach across the gap (net-zero layout) so the text starts hidden behind the image */
   [data-behavior='dynamic'] .bn-mob {
     padding-left: 16px;
     margin-left: -16px;
@@ -129,7 +123,6 @@ const hover = (on: boolean) => {
   }
   [data-behavior='dynamic'] .bn-text {
     display: block;
-    /* damped: fast out, long deceleration, no overshoot */
     animation: bn-dash 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1.95s both;
   }
   [data-behavior='dynamic'] .bn-btn {
@@ -147,7 +140,6 @@ const hover = (on: boolean) => {
 @keyframes bn-dash-y {
   from { translate: 0 calc(-100% - 12px); }
 }
-/* 0–.35s pill grows from center, hold, .9–1.4s lengthens to full */
 @keyframes bn-box {
   0% { max-width: 0; opacity: 0; animation-timing-function: ease-out; }
   25% { max-width: 260px; opacity: 1; }

@@ -1,4 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import 'tailwindcss';
+
+@source '../../';
+
+@theme {
+  --font-sans: Montserrat, sans-serif;
+  --font-akira: Akira, sans-serif;
+  --font-akira-expanded: 'Akira Expanded', sans-serif;
+
+  --radius-base: 15px;
+
+  --color-root-bg: #020525;
+  --color-brand: #03DDFF;
+  --color-shade-light: #1C2554;
+  --color-accent: #3947B8;
+  --color-cta: #B73BF1;
+  --color-cta-light: #BB70DE;
+  --color-cta-dark: #B739F2;
+}
 
 @font-face {
   font-family: 'Akira';
@@ -16,13 +35,14 @@
   font-display: swap;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @layer base {
   body {
     background-color: #020525;
     font-family: 'Montserrat', sans-serif;
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
   }
 }
