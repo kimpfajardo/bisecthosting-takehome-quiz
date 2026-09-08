@@ -2,8 +2,7 @@
 
 BisectHosting Minecraft hosting landing page. I built this using Nuxt 4 and Tailwind v4.
 
->> Add `?behavior=dynamic` to the URL for the animated version; without it
-the page ships with minimal to zero JS.
+>> Add `?behavior=dynamic` to the URL for the animated version.
 
 ## Run it locally
 
@@ -13,6 +12,27 @@ npm run dev
 ```
 
 That's http://localhost:3000. `npm run build` then `npm run preview` serves the production build.
+
+## PostHog A/B test
+
+The 50% banner is a PostHog experiment on the feature flag `promo-banner`: `control` shows no banner, `test` shows it.
+The primary metric is a funnel from experiment exposure to `checkout_cta_clicked`, so it counts unique visitors, not clicks.
+
+- `app/plugins/posthog.server.ts` evaluates the flag once per request, so the HTML already matches the visitor's variant.
+  No flicker, no layout shift.
+- `app/plugins/posthog.client.ts` boots posthog-js from that result and keeps the variant in sync with PostHog Toolbar
+  overrides.
+- `app/composables/usePromoBanner.ts` is the experiment logic: which variant to show, and the events it tracks
+  (`promo_banner_viewed`, `promo_banner_cta_clicked`, `checkout_cta_clicked`).
+- `Banner.vue` is plain UI. `app.vue` wires it up.
+
+Events leave through `/ingest`, a reverse proxy to PostHog, so ad blockers don't drop them.
+
+It needs `NUXT_PUBLIC_POSTHOG_PROJECT_TOKEN` and `NUXT_PUBLIC_POSTHOG_HOST` (see `.env.example`). Without them the site
+runs as the control variant.
+
+**Testing a variant:** launch the PostHog Toolbar on the site, open Feature flags, and set `promo-banner` to `test` or
+`control`. The banner updates in place.
 
 ## Try it on the live site
 

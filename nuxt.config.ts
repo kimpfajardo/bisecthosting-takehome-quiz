@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 const site = process.env.NUXT_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '')
 const title = 'Minecraft Server Hosting & Game Servers | BisectHosting'
 const image = `${site}/og.jpg`
+const posthogHost = process.env.NUXT_PUBLIC_POSTHOG_HOST ?? ''
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -18,6 +19,11 @@ export default defineNuxtConfig({
         host: process.env.NUXT_PUBLIC_POSTHOG_HOST,
       },
     },
+  },
+  routeRules: {
+    // PostHog reverse proxy: events leave through this domain, so ad blockers don't drop them.
+    '/ingest/static/**': { proxy: `${posthogHost.replace('.i.posthog.com', '-assets.i.posthog.com')}/static/**` },
+    '/ingest/**': { proxy: `${posthogHost}/**` },
   },
   app: {
     head: {

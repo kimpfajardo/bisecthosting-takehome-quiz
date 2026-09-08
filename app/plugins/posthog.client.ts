@@ -1,46 +1,23 @@
-import posthog from 'posthog-js'
-import type { PostHog, PostHogInterface } from 'posthog-js'
+import posthog from 'posthog-js';
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const runtimeConfig = useRuntimeConfig()
-  const { publicKey, host } = runtimeConfig.public.posthog
-
-  if (!publicKey || !host) {
-    if (import.meta.dev) {
-      const missingVariable = !publicKey
-        ? 'NUXT_PUBLIC_POSTHOG_PROJECT_TOKEN'
-        : 'NUXT_PUBLIC_POSTHOG_HOST'
-      throw new Error(
-        `${missingVariable} variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once ${missingVariable} is configured`,
-      )
-    }
-
-    return {
-      provide: {
-        posthog: undefined,
-      },
-    }
-  }
-
-  const posthogClient = posthog.init(publicKey, {
-    api_host: host,
-    capture_exceptions: {
-      capture_unhandled_errors: true,
-      capture_unhandled_rejections: true,
-      capture_console_errors: false,
-    },
-    loaded: (client: PostHogInterface) => {
-      if (import.meta.dev) client.debug()
-    },
-  })
-
-  nuxtApp.hook('vue:error', (error) => {
-    posthogClient.captureException(error)
-  })
-
-  return {
-    provide: {
-      posthog: posthogClient as PostHog,
-    },
-  }
-})
+  const { publicKey, host } = useRuntimeConfig().public.posthog;
+  if (!publicKey) return;
+  const state = usePosthogState();
+  posthog.init(publicKey, {
+    api_host: '/ingest', // first-party proxy (nuxt.config routeRules), so ad blockers don't drop events
+    ui_host: host?.replace('.i.posthog.com', '.posthog.com'), // the toolbar talks to the PostHog app, not the proxy
+    defaults: '2026-08-30',
+    autocapture: false, // only the experiment's own events matter
+    disable_surveys: true, // skips a 34 KB chunk the site never uses
+    bootstrap: { distinctID: state.value.distinctId, featureFlags: state.value.flags }, // server-evaluated: no flicker
+  });
+  // Once hydration is done (Suspense resolved), mirror the live flag value, including PostHog Toolbar
+  // overrides, into shared state. getFeatureFlag also records the experiment exposure ($feature_flag_called).
+  nuxtApp.hook('app:suspense:resolve', () =>
+    posthog.onFeatureFlags(() => {
+      state.value.flags[PROMO_FLAG] = posthog.getFeatureFlag(PROMO_FLAG) ?? false;
+    }),
+  );
+  return { provide: { posthog } };
+});

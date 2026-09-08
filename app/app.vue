@@ -3,7 +3,11 @@
     :data-behavior="behavior"
     class="relative min-h-screen overflow-x-clip bg-root-bg bg-[url('/main-bg.webp')] bg-cover bg-no-repeat bg-top text-white">
     <Header />
-    <Banner class="mt-6 xl:mt-[53px]" />
+    <Banner
+      v-if="show"
+      class="mt-6 xl:mt-[53px]"
+      @vue:mounted="track('promo_banner_viewed')"
+      @redeem="track('promo_banner_cta_clicked')" />
     <main class="relative mx-auto max-w-[1382px] px-4 pb-10 pt-10 lg:flex lg:items-center lg:gap-6 xl:block xl:pt-[76px]">
       <div
         class="pointer-events-none absolute left-1/2 top-0 hidden w-screen -translate-x-1/2 select-none xl:block">
@@ -75,6 +79,7 @@
         <div style="--i: 5" class="cta flex flex-wrap items-center gap-[23px]">
           <button
             type="button"
+            @click="track('checkout_cta_clicked')"
             class="relative isolate inline-flex h-[50px] w-[209px] items-center justify-center rounded-base bg-[radial-gradient(50%_50%_at_50%_50%,_#BB70DE_0%,_#B739F2_100%)] text-sm font-bold uppercase tracking-wide text-white">
             <span
               aria-hidden="true"
@@ -108,11 +113,12 @@
 </template>
 
 <script setup lang="ts">
+const { show, track } = usePromoBanner();
+
 const behavior = computed(() =>
   useRoute().query.behavior === 'dynamic' ? 'dynamic' : undefined,
 );
 
-// Rendered server-side, so the price is in the HTML for crawlers and for the no-JS default mode.
 const { data: pricing } = await useFetch('/api/pricing');
 const startingPrice = computed(
   () =>
