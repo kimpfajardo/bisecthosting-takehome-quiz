@@ -112,7 +112,7 @@ Vercel's filesystem is read-only, so production needs Turso for the table. One-t
 1. Vercel → Add New → Project → import `kimpfajardo/bisecthosting-takehome-quiz` (pushes to `dev` deploy to production).
 2. Project → Storage → Marketplace → **Turso** → install the free plan and connect it to the project. This adds
    `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to the project's environment variables.
-3. Settings → Environment Variables: add `NUXT_API_KEYS` (comma-separated tester keys) and `NUXT_SITE_URL`
-   (the production URL, used for canonical/og tags). Optional: `NUXT_REDIS_URL` (e.g. an Upstash `rediss://` URL)
-   so the price cache is shared across function instances; without it each instance refreshes within 60s.
+3. Settings → Environment Variables: add `NUXT_API_KEYS` (comma-separated tester keys). Optional: `NUXT_REDIS_URL`
+   (e.g. an Upstash `rediss://` URL) so the price cache is shared across function instances; without it each instance
+   refreshes within 60s. Canonical/og URLs use Vercel's production host automatically (`NUXT_SITE_URL` overrides it).
 4. Redeploy. The table is created and seeded on the first request.
