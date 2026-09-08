@@ -81,9 +81,9 @@
               class="pointer-events-none absolute inset-0 rounded-base border border-white mix-blend-soft-light"></span>
             VIEW ALL PLANS
           </button>
-          <span class="font-sans text-[16px] font-normal leading-[160%] tracking-[0]">
+          <span v-if="startingPrice" class="font-sans text-[16px] font-normal leading-[160%] tracking-[0]">
             Starting at
-            <span class="font-sans text-[16px] font-bold leading-[160%] tracking-[0]">$2.99/month</span>
+            <span class="font-sans text-[16px] font-bold leading-[160%] tracking-[0]">{{ startingPrice }}/month</span>
           </span>
         </div>
       </section>
@@ -111,6 +111,19 @@
 const behavior = computed(() =>
   useRoute().query.behavior === 'dynamic' ? 'dynamic' : undefined,
 );
+
+// Rendered server-side, so the price is in the HTML for crawlers and for the no-JS default mode.
+const { data: pricing } = await useFetch('/api/pricing');
+const startingPrice = computed(
+  () =>
+    pricing.value &&
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: pricing.value.currency }).format(pricing.value.price),
+);
+const description = computed(
+  () =>
+    `The best Minecraft server hosting${startingPrice.value ? ` starting at just ${startingPrice.value}/month` : ''} with unlimited slots, 24/7/365 support, 2,300+ modpacks on one-click installs at 21 locations.`,
+);
+useSeoMeta({ description, ogDescription: description, twitterDescription: description });
 
 const lines = ['Hosting', 'minecraft has', 'never been so', 'easy'];
 let n = 0;

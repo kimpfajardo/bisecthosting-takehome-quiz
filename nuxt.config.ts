@@ -2,7 +2,6 @@ import tailwindcss from '@tailwindcss/vite'
 
 const site = process.env.NUXT_SITE_URL || ''
 const title = 'Minecraft Server Hosting & Game Servers | BisectHosting'
-const description = 'The best Minecraft server hosting starting at just $2.99/month with unlimited slots, 24/7/365 support, 2,300+ modpacks on one-click installs at 21 locations.'
 const image = `${site}/og.jpg`
 
 export default defineNuxtConfig({
@@ -10,11 +9,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   vite: { plugins: [tailwindcss()] },
+  // Server-only (never sent to the browser). Set via NUXT_REDIS_URL / NUXT_API_KEYS.
+  runtimeConfig: { redisUrl: '', apiKeys: '' },
   app: {
     head: {
       title,
       meta: [
-        { name: 'description', content: description },
         { name: 'keywords', content: 'bisecthosting, bisect hosting, minecraft server hosting, minecraft hosting, dedicated minecraft server, minecraft host, best minecraft hosting' },
         { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
         { name: 'theme-color', content: '#020525' },
@@ -22,7 +22,6 @@ export default defineNuxtConfig({
         { property: 'og:site_name', content: 'BisectHosting' },
         { property: 'og:locale', content: 'en_US' },
         { property: 'og:title', content: title },
-        { property: 'og:description', content: description },
         { property: 'og:url', content: site || '/' },
         { property: 'og:image', content: image },
         { property: 'og:image:secure_url', content: image },
@@ -31,7 +30,6 @@ export default defineNuxtConfig({
         { property: 'og:image:alt', content: 'Hosting Minecraft has never been so easy — from $2.99/month' },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: title },
-        { name: 'twitter:description', content: description },
         { name: 'twitter:image', content: image }
       ],
       link: [
