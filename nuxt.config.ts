@@ -9,7 +9,16 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   vite: { plugins: [tailwindcss()] },
-  runtimeConfig: { redisUrl: '', apiKeys: '' },
+  runtimeConfig: {
+    redisUrl: '',
+    apiKeys: '',
+    public: {
+      posthog: {
+        publicKey: process.env.NUXT_PUBLIC_POSTHOG_PROJECT_TOKEN,
+        host: process.env.NUXT_PUBLIC_POSTHOG_HOST,
+      },
+    },
+  },
   app: {
     head: {
       title,

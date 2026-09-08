@@ -29,6 +29,7 @@
       type="button"
       @mouseenter="hover(true)"
       @mouseleave="hover(false)"
+      @click="handleRedeem"
       class="bn-btn inline-flex h-[50px] w-full items-center justify-center rounded-base bg-white text-[14px] font-bold uppercase leading-none tracking-wide text-[#B739F2] lg:w-[200px]">
       Redeem
     </button>
@@ -39,6 +40,9 @@
 import sakuraSrc from 'sakura-js/dist/sakura.min.js?url';
 
 const dynamic = useRoute().query.behavior === 'dynamic';
+const { $posthog: posthog } = useNuxtApp();
+const handleRedeem = () => posthog?.capture('promotion_redeemed');
+
 if (dynamic)
   useHead({
     script: [{ src: sakuraSrc, defer: true }],
