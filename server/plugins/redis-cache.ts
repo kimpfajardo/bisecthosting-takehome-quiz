@@ -1,7 +1,5 @@
 import redisDriver from 'unstorage/drivers/redis';
 
-// Opt-in shared cache: with NUXT_REDIS_URL set, cached handlers store in Redis (shared across
-// instances, survives restarts) instead of process memory. ioredis ships with Nitro, no extra dep.
 export default defineNitroPlugin(async () => {
   const { redisUrl } = useRuntimeConfig();
   if (!redisUrl) return;
