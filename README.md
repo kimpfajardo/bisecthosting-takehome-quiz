@@ -33,12 +33,12 @@ Prices are stored in cents, so $3.49 is `349`. Put your key in an `x-api-key` he
 `Authorization` header works too):
 
 ```bash
-curl -X PATCH https://bisecthosting-takehome-quiz.vercel.app/api/plans/Budget \
+curl -X PATCH https://bisecthosting-takehome-quiz.vercel.app/api/pricing \
   -H "x-api-key: YOUR_KEY" -H "Content-Type: application/json" \
   -d '{"price_cents": 349}'
 ```
 
-A 200 with `{"name":"Budget","price_cents":349}` means it worked.
+A 200 with `{"price":3.49,"currency":"USD"}` means it worked.
 
 **3. Look at the site**
 
@@ -50,15 +50,11 @@ I defaulted it to 299 based on the Figma design. When you're done, be kind and s
 
 **Prefer Postman?**
 
-Two requests and you're set. First a `GET` to `https://bisecthosting-takehome-quiz.vercel.app/api/pricing`, nothing
-else to fill in. Then a `PATCH` to `https://bisecthosting-takehome-quiz.vercel.app/api/plans/Budget`: on the Headers
-tab add `x-api-key` with your key as the value, and on the Body tab pick raw, JSON, and type `{"price_cents": 349}`.
-Send the PATCH, then the GET, and the new price is there.
+Two requests to the same URL, `https://bisecthosting-takehome-quiz.vercel.app/api/pricing`. The `GET` needs nothing
+else. For the `PATCH`, on the Headers tab add `x-api-key` with your key as the value, and on the Body tab pick raw,
+JSON, and type `{"price_cents": 349}`. Send the PATCH, then the GET, and the new price is there.
 
 **Good to know**
 
-- There are two plans, `Budget` and `Premium`, and the page shows whichever is cheaper. Push Budget above $7.99 and
-  you'll see Premium's price instead.
-- 401 means the key is missing or wrong. 400 means the body isn't `{"price_cents": <whole number>}`. 404 means there's
-  no plan by that name (names are case-sensitive).
+- 401 means the key is missing or wrong. 400 means the body isn't `{"price_cents": <whole number>}`.
 - Prices can't go negative, but zero is fine. "Starting at $0.00/month" is a real thing you can make the site say 😁
