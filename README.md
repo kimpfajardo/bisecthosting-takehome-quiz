@@ -1,80 +1,69 @@
 # BisectHosting take-home quiz
 
-BisectHosting Minecraft hosting landing page. I built this using Nuxt 4 and Tailwind v4.
+I built this Minecraft hosting landing page with Nuxt 4 and Tailwind v4, based on the BisectHosting design.
+The [live demo](https://bisecthosting-takehome-quiz.vercel.app) has an animated version too; add `?behavior=dynamic` to try it.
 
->> Add `?behavior=dynamic` to the URL for the animated version.
+## Running locally
 
-## Run it locally
-
-```bash
-npm install
-npm run dev
-```
-
-That's http://localhost:3000. `npm run build` then `npm run preview` serves the production build.
-
-## PostHog A/B test
-
-The 50% banner is a PostHog experiment on the feature flag `promo-banner`: `control` shows no banner, `test` shows it.
-The primary metric is a funnel from experiment exposure to `checkout_cta_clicked`, so it counts unique visitors, not clicks.
-
-- `app/plugins/posthog.server.ts` evaluates the flag once per request, so the HTML already matches the visitor's variant.
-  No flicker, no layout shift.
-- `app/plugins/posthog.client.ts` boots posthog-js from that result and keeps the variant in sync with PostHog Toolbar
-  overrides.
-- `app/composables/usePromoBanner.ts` is the experiment logic: which variant to show, and the events it tracks
-  (`promo_banner_viewed`, `promo_banner_cta_clicked`, `checkout_cta_clicked`).
-- `Banner.vue` is plain UI. `app.vue` wires it up.
-
-Events leave through `/ingest`, a reverse proxy to PostHog, so ad blockers don't drop them.
-
-It needs `NUXT_PUBLIC_POSTHOG_PROJECT_TOKEN` and `NUXT_PUBLIC_POSTHOG_HOST` (see `.env.example`). Without them the site
-runs as the control variant.
-
-**Testing a variant:** launch the PostHog Toolbar on the site, open Feature flags, and set `promo-banner` to `test` or
-`control`. The banner updates in place.
-
-## Try it on the live site
-
-The site is at https://bisecthosting-takehome-quiz.vercel.app. Reading is open to everyone. To change anything you'll
-need an API key.
-
-**1. Fetching the current price**
+The app needs Node.js v22 or v24 and npm. Install the dependencies and copy the environment file:
 
 ```bash
-curl https://bisecthosting-takehome-quiz.vercel.app/api/pricing
+npm ci
+cp .env.example .env
 ```
 
-You'll get `{"price":2.99,"currency":"USD"}`, or whatever it is right now. It's the exact value the homepage shows.
+Once `.env` is filled in, `npm run dev` starts the site at http://localhost:3000.
+I check the production build with `npm run build` followed by `npm run preview`.
 
-**2. Updating the price**
+## Environment variables
 
-Prices are stored in cents, so $3.49 is `349`. Put your key in an `x-api-key` header (a `Bearer` token in the
-`Authorization` header works too):
+I keep configuration in `.env`. `NUXT_SITE_URL` is the site's origin, so use `http://localhost:3000` locally.
+`NUXT_API_KEYS` holds the comma-separated keys accepted by the price update endpoint.
+
+Hosted storage needs `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` from a Turso database.
+Both can stay blank locally. `NUXT_REDIS_URL` is optional; add it to `.env` when using Redis.
+
+PostHog needs `NUXT_PUBLIC_POSTHOG_PROJECT_TOKEN` and `NUXT_PUBLIC_POSTHOG_HOST` from its project settings.
+The host is `https://us.i.posthog.com` for US projects or `https://eu.i.posthog.com` for EU projects.
+Without a token, the page still works with the banner hidden. Local price updates require an API key and both PostHog values.
+
+Restart the app after editing `.env`, and set the PostHog values and site URL before building for production.
+
+## Database and caching
+
+I store prices in cents. On startup, the database initializer creates the pricing table and seeds it with `299` ($2.99),
+leaving any existing price alone. Locally, it creates `.data/pricing.sqlite` automatically, so there's no separate database setup.
+For hosted storage, create a Turso database and put its URL and auth token in `.env`.
+
+I cache pricing for 60 seconds using Nitro's default storage: files in development and memory in production.
+Redis lets server instances share that cache. To try it locally with Docker:
 
 ```bash
-curl -X PATCH https://bisecthosting-takehome-quiz.vercel.app/api/pricing \
-  -H "x-api-key: YOUR_KEY" -H "Content-Type: application/json" \
-  -d '{"price_cents": 349}'
+docker run --rm -d --name bisecthosting-redis -p 127.0.0.1:6379:6379 redis:7-alpine
 ```
 
-A 200 with `{"price":3.49,"currency":"USD"}` means it worked.
+Add `NUXT_REDIS_URL=redis://localhost:6379` to `.env` and restart.
+The price update endpoint clears the cache after each write. Without shared Redis, another instance can keep its old price for up to a minute.
 
-**3. Look at the site**
+## PostHog setup
 
-Run the first request again, or reload the homepage. It now says "Starting at $3.49/month". Updates clear the server
-cache, so you should see the change straight away. If a reload still shows the old price, you landed on a second server
-instance whose cache hasn't expired yet; it sorts itself out within a minute.
+I use the flag `promo-banner` for the experiment. To [recreate it in PostHog](https://posthog.com/docs/experiments/creating-an-experiment),
+use the variants `control` and `test`, split 50/50, with user-level assignment and 100% rollout.
+I measure conversion with a Funnel metric ending in `checkout_cta_clicked`, using the default `$feature_flag_called` exposure.
+PostHog adds that exposure step automatically.
 
-I defaulted it to 299 based on the Figma design. When you're done, be kind and set it back to `299`.
+For local testing, add `http://localhost:3000` in Launch Toolbar and override the flag to try each variant.
+Clear the override afterwards. Once the events are coming through, launch the experiment.
 
-**Prefer Postman?**
+## How I implemented the experiment
 
-Two requests to the same URL, `https://bisecthosting-takehome-quiz.vercel.app/api/pricing`. The `GET` needs nothing
-else. For the `PATCH`, on the Headers tab add `x-api-key` with your key as the value, and on the Body tab pick raw,
-JSON, and type `{"price_cents": 349}`. Send the PATCH, then the GET, and the new price is there.
+I'm testing whether showing a 50% off banner gets more visitors to click View All Plans.
+`control` hides the banner and `test` shows it. I measure the share of exposed visitors who click, so repeated clicks don't inflate conversions.
 
-**Good to know**
+I evaluate the flag on the server using the visitor's PostHog ID, then pass the result to the browser so the first render matches.
+The browser handles later flag changes and Toolbar overrides. A failed server request falls back to control.
 
-- 401 means the key is missing or wrong. 400 means the body isn't `{"price_cents": <whole number>}`.
-- Prices can't go negative, but zero is fine. "Starting at $0.00/month" is a real thing you can make the site say 😁
+I keep visibility and tracking in `usePromoBanner.ts`. It captures `promo_banner_viewed` when the banner mounts,
+`promo_banner_cta_clicked` for Redeem, and `checkout_cta_clicked` for View All Plans.
+Exposure is recorded in the browser, and browser requests go through the `/ingest` proxy.
+The buttons currently track clicks; I haven't built a checkout flow.
