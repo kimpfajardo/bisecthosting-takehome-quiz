@@ -162,10 +162,10 @@ const heroFeatures = [
 </script>
 
 <style>
-body:has(.bn-btn:hover) .mc {
+[data-behavior='dynamic']:has(.bn-btn:hover) .mc {
   opacity: 0;
 }
-body:has(.bn-btn:hover) .mc-sakura {
+[data-behavior='dynamic']:has(.bn-btn:hover) .mc-sakura {
   opacity: 1;
 }
 

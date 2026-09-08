@@ -1,5 +1,10 @@
 import tailwindcss from '@tailwindcss/vite'
 
+const site = process.env.NUXT_SITE_URL || ''
+const title = 'Minecraft Server Hosting & Game Servers | BisectHosting'
+const description = 'The best Minecraft server hosting starting at just $2.99/month with unlimited slots, 24/7/365 support, 2,300+ modpacks on one-click installs at 21 locations.'
+const image = `${site}/og.jpg`
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -7,8 +12,33 @@ export default defineNuxtConfig({
   vite: { plugins: [tailwindcss()] },
   app: {
     head: {
-      title: 'Minecraft Server Hosting & Game Servers | BisectHosting',
+      title,
+      meta: [
+        { name: 'description', content: description },
+        { name: 'keywords', content: 'bisecthosting, bisect hosting, minecraft server hosting, minecraft hosting, dedicated minecraft server, minecraft host, best minecraft hosting' },
+        { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
+        { name: 'theme-color', content: '#020525' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'BisectHosting' },
+        { property: 'og:locale', content: 'en_US' },
+        { property: 'og:title', content: title },
+        { property: 'og:description', content: description },
+        { property: 'og:url', content: site || '/' },
+        { property: 'og:image', content: image },
+        { property: 'og:image:secure_url', content: image },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:image:alt', content: 'Hosting Minecraft has never been so easy — from $2.99/month' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: title },
+        { name: 'twitter:description', content: description },
+        { name: 'twitter:image', content: image }
+      ],
       link: [
+        { rel: 'canonical', href: site || '/' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico', sizes: '48x48' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap' }
