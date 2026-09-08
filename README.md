@@ -45,6 +45,30 @@ docker run --rm -d --name bisecthosting-redis -p 127.0.0.1:6379:6379 redis:7-alp
 Add `NUXT_REDIS_URL=redis://localhost:6379` to `.env` and restart.
 The price update endpoint clears the cache after each write. Without shared Redis, another instance can keep its old price for up to a minute.
 
+## Using the pricing API
+
+I expose the starting price through `GET /api/pricing`. It doesn't need authentication:
+
+```bash
+curl http://localhost:3000/api/pricing
+```
+
+The response is `200` with JSON such as `{"price":2.99,"currency":"USD"}`.
+To change it, send `PATCH /api/pricing` with a key from `NUXT_API_KEYS`. Prices are in cents, so `349` means $3.49:
+
+```bash
+curl -X PATCH http://localhost:3000/api/pricing \
+  -H "x-api-key: YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"price_cents":349}'
+```
+
+A successful update returns `200` with `{"price":3.49,"currency":"USD"}`. Fetch again or reload the homepage to see it.
+`Authorization: Bearer YOUR_KEY` also works. A missing or incorrect key returns `401`; a missing, negative, or non-integer `price_cents` returns `400`.
+Local updates also need both PostHog variables configured.
+
+To use the deployed API, replace `http://localhost:3000` with `https://bisecthosting-takehome-quiz.vercel.app` and use a key configured there.
+
 ## PostHog setup
 
 I use the flag `promo-banner` for the experiment. To [recreate it in PostHog](https://posthog.com/docs/experiments/creating-an-experiment),
