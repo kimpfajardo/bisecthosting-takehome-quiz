@@ -29,7 +29,7 @@
       type="button"
       @mouseenter="hover(true)"
       @mouseleave="hover(false)"
-      class="bn-btn inline-flex h-[50px] w-full items-center justify-center rounded bg-white text-[14px] font-bold uppercase leading-none tracking-wide text-[#B739F2] transition-transform duration-300 ease-out hover:-rotate-[0.5deg] hover:scale-105 lg:w-[200px]">
+      class="bn-btn inline-flex h-[50px] w-full items-center justify-center rounded bg-white text-[14px] font-bold uppercase leading-none tracking-wide text-[#B739F2] lg:w-[200px]">
       Redeem
     </button>
   </div>
@@ -64,6 +64,14 @@ const hover = (on: boolean) => {
 </script>
 
 <style>
+/* Redeem hover (dynamic only): smooth scale with a slight tilt */
+[data-behavior='dynamic'] .bn-btn {
+  transition: transform 0.3s ease-out;
+}
+[data-behavior='dynamic'] .bn-btn:hover {
+  transform: rotate(-0.5deg) scale(1.05);
+}
+
 /* ponytail: ?behavior=dynamic only; pure CSS timeline. Base rules below = final frame, keyframes only add the start state. */
 [data-behavior='dynamic'] .bn {
   animation: bn-card 0.4s ease-out both;
