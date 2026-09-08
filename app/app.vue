@@ -1,5 +1,6 @@
 <template>
   <div
+    :data-behavior="behavior"
     class="relative min-h-screen overflow-x-clip bg-root-bg bg-[url('/main-bg.webp')] bg-cover bg-no-repeat bg-top text-white">
     <Header />
     <Banner class="mt-6 xl:mt-[53px]" />
@@ -69,6 +70,10 @@
 </template>
 
 <script setup lang="ts">
+const behavior = computed(() =>
+  useRoute().query.behavior === 'dynamic' ? 'dynamic' : undefined,
+);
+
 const heroFeatures = [
   {
     title: 'Instant Setup.',
