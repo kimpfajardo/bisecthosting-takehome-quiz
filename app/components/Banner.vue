@@ -6,7 +6,7 @@
       class="pointer-events-none absolute inset-0 rounded-base border border-white mix-blend-soft-light"></span>
     <div class="bn-group flex items-center gap-4 md:flex-col md:gap-3 lg:flex-row lg:gap-[41px]">
       <img
-        src="/panorama-cherry-blossom.png"
+        src="/panorama-cherry-blossom.webp"
         alt="Panorama Cherry Blossom"
         class="bn-img h-[50px] w-auto min-w-0 max-w-none object-contain select-none" />
       <p class="bn-mob shrink-0 font-sans leading-none md:hidden">
@@ -37,15 +37,16 @@
 
 <script setup lang="ts">
 import sakuraSrc from 'sakura-js/dist/sakura.min.js?url';
-import 'sakura-js/dist/sakura.min.css';
 
 const dynamic = useRoute().query.behavior === 'dynamic';
-if (dynamic) useHead({ script: [{ src: sakuraSrc, defer: true }] });
+if (dynamic)
+  useHead({
+    script: [{ src: sakuraSrc, defer: true }],
+    link: [{ rel: 'stylesheet', href: '/sakura.min.css' }],
+  });
 
-const emit = defineEmits<{ hover: [on: boolean] }>();
 let sakura: { start(): void; stop(graceful?: boolean): void } | undefined;
 const hover = (on: boolean) => {
-  emit('hover', on);
   if (!dynamic) return;
   const Sakura = (window as any).Sakura;
   if (!on) return sakura?.stop(true);

@@ -3,42 +3,48 @@
     :data-behavior="behavior"
     class="relative min-h-screen overflow-x-clip bg-root-bg bg-[url('/main-bg.webp')] bg-cover bg-no-repeat bg-top text-white">
     <Header />
-    <Banner class="mt-6 xl:mt-[53px]" @hover="sakura = $event" />
+    <Banner class="mt-6 xl:mt-[53px]" />
     <main class="relative mx-auto max-w-[1382px] px-4 pb-10 pt-10 lg:flex lg:items-center lg:gap-6 xl:block xl:pt-[76px]">
       <div
         class="pointer-events-none absolute left-1/2 top-0 hidden w-screen -translate-x-1/2 select-none xl:block">
         <img
-          src="/cherry-blossom-3.png"
+          src="/cherry-blossom-3.webp"
+          width="198"
+          height="457"
           alt=""
           aria-hidden="true"
           class="absolute left-0 -top-[17px]" />
         <img
-          src="/cherry-blossom-2.png"
+          src="/cherry-blossom-2.webp"
+          width="173"
+          height="379"
           alt=""
           aria-hidden="true"
           class="absolute left-[18px] top-[46px]" />
       </div>
       <section class="hero relative flex max-w-[579px] flex-col gap-[33px] lg:shrink-0 xl:ml-[96px]">
         <img
-          src="/minecraft.png"
+          src="/minecraft.webp"
+          width="987"
+          height="650"
           alt=""
           aria-hidden="true"
-          :class="{ 'opacity-0': sakura }"
-          class="pointer-events-none absolute left-full top-[-65px] -ml-[150px] hidden h-[650px] w-[1038.3px] max-w-none rotate-0 select-none transition-opacity duration-500 xl:block" />
+          class="mc pointer-events-none absolute left-full top-[-65px] -ml-[150px] hidden h-[650px] w-[1038.3px] max-w-none rotate-0 select-none transition-opacity duration-500 xl:block" />
         <img
-          src="/minecraft-sakura.png"
+          src="/minecraft-sakura.webp"
+          width="1448"
+          height="1086"
           alt=""
           aria-hidden="true"
           fetchpriority="low"
-          :class="{ 'opacity-100': sakura }"
-          class="pointer-events-none absolute left-full top-[-65px] -ml-[150px] hidden h-[650px] w-[1038.3px] max-w-none object-contain opacity-0 select-none transition-opacity duration-500 xl:block" />
+          class="mc-sakura pointer-events-none absolute left-full top-[-65px] -ml-[150px] hidden h-[650px] w-[1038.3px] max-w-none object-contain opacity-0 select-none transition-opacity duration-500 xl:block" />
         <div class="relative w-fit">
           <Chip>Cherry Blossom Update</Chip>
           <img
-            src="/cherry-blossom-1.png"
+            src="/cherry-blossom-1.webp"
             alt=""
             aria-hidden="true"
-            class="pointer-events-none absolute left-full top-1/2 ml-4 w-[100px] -translate-y-1/2 select-none xl:ml-[108px] xl:w-auto xl:translate-y-[calc(-50%+40px)]" />
+            class="pointer-events-none absolute left-full top-1/2 ml-4 w-[100px] -translate-y-1/2 select-none xl:ml-[108px] xl:w-auto xl:translate-y-[calc(-50%+40px)] aspect-[220/195]" />
         </div>
         <h1
           style="--i: 1"
@@ -84,18 +90,18 @@
       <div
         class="hero-img pointer-events-none relative -ml-[10%] mt-0 w-[120%] select-none md:mx-auto md:-mt-4 md:w-[80%] lg:-ml-[220px] lg:mt-0 lg:w-auto lg:shrink-0 xl:hidden">
         <img
-          src="/minecraft.png"
+          src="/minecraft.webp"
           alt=""
           aria-hidden="true"
-          :class="{ 'opacity-0': sakura }"
-          class="w-full max-w-none transition-opacity duration-500 lg:h-[600px] lg:w-auto" />
+          class="mc w-full max-w-none transition-opacity duration-500 lg:h-[600px] lg:w-auto aspect-[987/650]" />
         <img
-          src="/minecraft-sakura.png"
+          src="/minecraft-sakura.webp"
+          width="1448"
+          height="1086"
           alt=""
           aria-hidden="true"
           fetchpriority="low"
-          :class="{ 'opacity-100': sakura }"
-          class="absolute inset-0 h-full w-full object-contain opacity-0 transition-opacity duration-500" />
+          class="mc-sakura absolute inset-0 h-full w-full object-contain opacity-0 transition-opacity duration-500" />
       </div>
     </main>
   </div>
@@ -105,8 +111,6 @@
 const behavior = computed(() =>
   useRoute().query.behavior === 'dynamic' ? 'dynamic' : undefined,
 );
-
-const sakura = ref(false);
 
 const lines = ['Hosting', 'minecraft has', 'never been so', 'easy'];
 let n = 0;
@@ -158,6 +162,13 @@ const heroFeatures = [
 </script>
 
 <style>
+body:has(.bn-btn:hover) .mc {
+  opacity: 0;
+}
+body:has(.bn-btn:hover) .mc-sakura {
+  opacity: 1;
+}
+
 .cta {
   container-type: inline-size;
 }
