@@ -1,118 +1,64 @@
-# Nuxt Minimal Starter
+# BisectHosting take-home quiz
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+BisectHosting Minecraft hosting landing page. I built this using Nuxt 4 and Tailwind v4.
 
-## Setup
+>> Add `?behavior=dynamic` to the URL for the animated version; without it
+the page ships with minimal to zero JS.
 
-Make sure to install dependencies:
+## Run it locally
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+That's http://localhost:3000. `npm run build` then `npm run preview` serves the production build.
 
-Build the application for production:
+## Try it on the live site
+
+The site is at https://bisecthosting-takehome-quiz.vercel.app. Reading is open to everyone. To change anything you'll
+need an API key.
+
+**1. Fetching the current price**
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+curl https://bisecthosting-takehome-quiz.vercel.app/api/pricing
 ```
 
-Locally preview production build:
+You'll get `{"price":2.99,"currency":"USD"}`, or whatever it is right now. It's the exact value the homepage shows.
+
+**2. Updating the price**
+
+Prices are stored in cents, so $3.49 is `349`. Put your key in an `x-api-key` header (a `Bearer` token in the
+`Authorization` header works too):
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
-
-## Dynamic pricing
-
-"Starting at $X/month" is read from a `plans` table (SQLite through libSQL: a local file in dev, [Turso](https://turso.tech)
-in production) and exposed by `GET /api/pricing`, which returns the cheapest plan. The page fetches it during SSR, so
-the price is in the HTML for crawlers and for the no-JS default mode.
-
-- The database URL and token are read from server-side env vars (`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`; default
-  `file:.data/pricing.sqlite`) and never reach the browser. The table is created and seeded on first boot.
-- The endpoint is cached for 60s (Nitro cache, in memory) so renders don't hit the database. Set `NUXT_REDIS_URL`
-  (e.g. `redis://localhost:6379`) to back the cache with Redis instead, shared across instances.
-- Change a price with no redeploy through the key-protected endpoint. It also drops the cache entry, so the page
-  shows the new price on the next load:
-
-```bash
-curl -X PATCH http://localhost:3000/api/plans/Budget \
-  -H "Authorization: Bearer <api key>" -H "Content-Type: application/json" \
+curl -X PATCH https://bisecthosting-takehome-quiz.vercel.app/api/plans/Budget \
+  -H "x-api-key: YOUR_KEY" -H "Content-Type: application/json" \
   -d '{"price_cents": 349}'
 ```
 
-  Editing the table directly (e.g. `sqlite3 .data/pricing.sqlite "UPDATE plans SET price_cents = 349 WHERE name = 'Budget'"`)
-  works too; the page then follows within a minute.
+A 200 with `{"name":"Budget","price_cents":349}` means it worked.
 
-### Giving testers access
+**3. Look at the site**
 
-1. Mint one key per tester (`openssl rand -hex 16`) and set them comma-separated in `NUXT_API_KEYS` (see `.env.example`).
-   Restart the server after changing the list.
-2. Send each tester the site URL and their key. They send it as `Authorization: Bearer <key>` or `x-api-key: <key>`.
-   `GET /api/pricing` and the page itself need no key. Wrong or missing key → 401, bad body → 400, unknown plan → 404.
-3. For Postman, import [`pricing.postman_collection.json`](pricing.postman_collection.json) and fill in the `baseUrl` and
-   `apiKey` collection variables. Plans seeded are `Budget` and `Premium`.
+Run the first request again, or reload the homepage. It now says "Starting at $3.49/month". Updates clear the server
+cache, so you should see the change straight away. If a reload still shows the old price, you landed on a second server
+instance whose cache hasn't expired yet; it sorts itself out within a minute.
 
-## Deploy (Vercel)
+I defaulted it to 299 based on the Figma design. When you're done, be kind and set it back to `299`.
 
-Vercel's filesystem is read-only, so production needs Turso for the table. One-time setup:
+**Prefer Postman?**
 
-1. Vercel → Add New → Project → import `kimpfajardo/bisecthosting-takehome-quiz` (pushes to `dev` deploy to production).
-2. Project → Storage → Marketplace → **Turso** → install the free plan and connect it to the project. This adds
-   `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` to the project's environment variables.
-3. Settings → Environment Variables: add `NUXT_API_KEYS` (comma-separated tester keys). Optional: `NUXT_REDIS_URL`
-   (e.g. an Upstash `rediss://` URL) so the price cache is shared across function instances; without it each instance
-   refreshes within 60s. Canonical/og URLs use Vercel's production host automatically (`NUXT_SITE_URL` overrides it).
-4. Redeploy. The table is created and seeded on the first request.
+Two requests and you're set. First a `GET` to `https://bisecthosting-takehome-quiz.vercel.app/api/pricing`, nothing
+else to fill in. Then a `PATCH` to `https://bisecthosting-takehome-quiz.vercel.app/api/plans/Budget`: on the Headers
+tab add `x-api-key` with your key as the value, and on the Body tab pick raw, JSON, and type `{"price_cents": 349}`.
+Send the PATCH, then the GET, and the new price is there.
+
+**Good to know**
+
+- There are two plans, `Budget` and `Premium`, and the page shows whichever is cheaper. Push Budget above $7.99 and
+  you'll see Premium's price instead.
+- 401 means the key is missing or wrong. 400 means the body isn't `{"price_cents": <whole number>}`. 404 means there's
+  no plan by that name (names are case-sensitive).
+- Prices can't go negative, but zero is fine. "Starting at $0.00/month" is a real thing you can make the site say 😁
