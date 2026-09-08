@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite'
 
-const site = process.env.NUXT_SITE_URL || ''
+// Absolute origin for canonical/og URLs; Vercel provides its production host at build time.
+const site = process.env.NUXT_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '')
 const title = 'Minecraft Server Hosting & Game Servers | BisectHosting'
 const image = `${site}/og.jpg`
 
